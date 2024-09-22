@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Tracker</title>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        .location-list {
+            margin-top: 20px;
+        }
+        .location-item {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tracked Locations</h1>
+    <div id="map"></div>
+    <div class="location-list" id="location-list"></div>
+
+    <script>
+        // Initialize and add the map
+        function initMap() {
+            const defaultLocation = { lat: 55.7558, lng: 37.6173 }; // Moscow
+            const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 5,
+                center: defaultLocation
+            });
+
+            // Fetch locations from the server
+            fetch('/locations')
+                .then(response => response.json())
+                .then(locations => {
+                    const bounds = new google.maps.LatLngBounds();
+
+                    locations.forEach(location => {
+                        const latLng = { lat: location.latitude, lng: location.longitude };
+                        const marker = new google.maps.Marker({
+                            position: latLng,
+                            map: map,
+                            title: location.address
+                        });
+
+                        bounds.extend(latLng);
+
+                        // Add location details in the list
+                        const locationList = document.getElementById('location-list');
+                        const locationItem = document.createElement('div');
+                        locationItem.classList.add('location-item');
+                        locationItem.innerHTML = `<strong>${location.address}</strong><br>Visited at: ${new Date(location.timestamp).toLocaleString()}`;
+                        locationList.appendChild(locationItem);
+                    });
+
+                    // Adjust the map to fit all markers
+                    map.fitBounds(bounds);
+                });
+        }
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
+</body>
+</html>
